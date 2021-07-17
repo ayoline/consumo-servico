@@ -10,9 +10,12 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  String _resultado = 'Resultado';
+  TextEditingController _controllerCep = TextEditingController();
+
   _recuperarCep() async {
-    String cep = "95043610";
-    var url = Uri.parse("https://viacep.com.br/ws/" + cep + "/json/");
+    String cepDigitado = _controllerCep.text;
+    var url = Uri.parse("https://viacep.com.br/ws/" + cepDigitado + "/json/");
     http.Response response;
 
     response = await http.get(url);
@@ -22,8 +25,12 @@ class _HomeState extends State<Home> {
     String bairro = retorno["bairro"];
     String localidade = retorno["localidade"];
 
+    setState(() {
+      _resultado = ' $logradouro, $complemento, $localidade';
+    });
+
     print(
-        "Resposta logradouro: ${logradouro} complemento: ${complemento} bairro: ${bairro} localidade: ${localidade}");
+        "Resposta logradouro: $logradouro complemento: $complemento bairro: $bairro localidade: $localidade");
   }
 
   @override
@@ -36,10 +43,18 @@ class _HomeState extends State<Home> {
         padding: EdgeInsets.all(40),
         child: Column(
           children: <Widget>[
+            TextField(
+              keyboardType: TextInputType.number,
+              decoration:
+                  InputDecoration(labelText: 'Digite o CEP: ex 95043610'),
+              style: TextStyle(fontSize: 20),
+              controller: _controllerCep,
+            ),
             ElevatedButton(
               child: Text("Clique aqui"),
               onPressed: _recuperarCep,
-            )
+            ),
+            Text(_resultado),
           ],
         ),
       ),
